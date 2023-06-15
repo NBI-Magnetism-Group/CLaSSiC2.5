@@ -31,6 +31,41 @@ Packages needed:
 
 
 ### Task.json structure
+When everything is download and located on your computer and all the above steps are complete. Then open the 'run.bash' and press "ctrl/command"+"shift"+"b" to create the task.json file.
+
+If this returns an error, then in the root of CLaSSiC folder, create ".vscode" and in that folder create a "tasks.json" file.
+
+Else the "tasks.json" file needs to contain:
+
+```
+{
+  "version":"2.0.0",
+  "tasks": [
+    {
+			"type": "cppbuild",
+			"label": "release",
+			"command": "C:/msys64/mingw64/bin/g++.exe",
+			"args": [
+				"-fdiagnostics-color=always",
+				"-O3",
+				"'Your location to CLaSSiC'/CLaSSiC2.0/CLaSSiC2.0/*.cpp",
+				"-o",
+				"'Your location to CLaSSiC'/CLaSSiC2.0/CLaSSiC2.0/model.out",
+				"-std=c++17",
+				"-mavx2",
+				"-march=native"
+			],
+			"problemMatcher": ["$gcc"],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compiler: C:/msys64/mingw64/bin/g++.exe"
+		},
+}
+```
+
+
 
 
 
