@@ -33,7 +33,7 @@ Packages needed:
 ### Task.json structure
 When everything is download and located on your computer and all the above steps are complete. Then open the 'run.bash' and press "ctrl/command"+"shift"+"b" to create the 'task.json' file.
 
-If this returns an error, then in the root of CLaSSiC folder, create '.vscode' and in that folder create a 'tasks.json' file.
+If this returns an error, then in the root of CLaSSiC folder, create '.vscode'-folder and in that folder create a 'tasks.json' file.
 
 Else the 'tasks.json' file needs to contain:
 
