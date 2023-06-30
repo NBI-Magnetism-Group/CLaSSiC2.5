@@ -7,17 +7,17 @@ fi
 
 dt=1e-15
 steps=1e6
-J=2
-lambda=1e-3
-B=10
+J=0
+lambda=0
+B=5
 anisotropyAxis=0
 anisotropyPlane=0
 T=0
-init=2
-angle=0
-mode=2
-structure=chain
-nCellsX=30
+init=1
+angle=45
+mode=0
+structure=single
+nCellsX=1
 periodicBoundary=true
 stabilize=false
 
