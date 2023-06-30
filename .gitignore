@@ -5,6 +5,7 @@ Testing/
 
 #executables
 *.exe
+*.out
 
 #vscode settings
 .vscode
