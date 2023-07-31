@@ -30,6 +30,7 @@ namespace constants
 	int mode = 1;
 	double minDistance = 1.1;
 	bool periodicBoundary = true;
+	bool dipole;
 	bool stabilize = false;
 
 	// Simulation parameters

@@ -6,9 +6,6 @@
 #include <algorithm>
 #include <filesystem>
 #include <chrono>
-#include <vector>
-#include <sstream>
-#include <string>
 
 Simulation::Simulation()
 {
@@ -239,10 +236,6 @@ void Simulation::initialize()
 			spin[3 * i] = std::cos((float)i / constants::nAtoms * 2 * constants::pi) * std::sin(constants::angle);
 			spin[3 * i + 1] = std::sin((float)i / constants::nAtoms * 2 * constants::pi) * std::sin(constants::angle);
 			spin[3 * i + 2] = std::cos(constants::angle);
-
-			// spin[6 * i + 3] = std::cos((float)i / constants::nAtoms * 2 * constants::pi) * std::sin(constants::angle);
-			// spin[6 * i + 4] = std::sin((float)i / constants::nAtoms * 2 * constants::pi) * std::sin(constants::angle);
-			// spin[6 * i + 5] = -std::cos(constants::angle);
 		}
 		break;
 	case 2:
@@ -254,13 +247,10 @@ void Simulation::initialize()
 				spin[3 * i + 2] = 1;
 			if (constants::J < 0)
 				{
-					// spin[3 * i + 3] = 0.001 * std::cos((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
-					// spin[3 * i + 4] = -0.001 * std::sin((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
-					// spin[3 * i + 5] = -1;
+					spin[3 * i + 1] = 0.001 * std::cos((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
+					spin[3 * i + 2] = -0.001 * std::sin((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
+					spin[3 * i + 3] = -1;
 					i++;
-					spin[3 * i ] = -0.001 * std::cos((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
-					spin[3 * i + 1] = -0.001 * std::sin((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
-					spin[3 * i + 2] = -1;
 				}
 		}
 		normalize();
@@ -353,27 +343,28 @@ void Simulation::initialize()
 			spin[3*i+2] = 0;
 		}
 	break;
-		case 8:
-		// Uses spin orientations in the Saved_spin.dat file to initialize 
-		// Load file
-		std::string file = "Saved_spin.dat";
-		std::ifstream saved_spins;
-		saved_spins.open(file);
+	// 	case 8:
+	// 	// Uses spin orientations in the Saved_spin.dat file to initialize 
+	// 	// Load file
+	// 	std::string file = "Saved_spin.dat";
+	// 	std::ifstream saved_spins;
+	// 	saved_spins.open(file);
 
-		// Get the data from the file
-		int n = constants::nAtoms*3;
+	// 	// Get the data from the file
+	// 	int n = constants::nAtoms*3;
 
-    	int position = 0;
+    // 	int position = 0;
 
-		// Pulling data out into loaded_spin
-		while(! saved_spins.eof() && position < n)
-		{
-    		saved_spins >> spin[position];
-			position++;
-		}
-		std::cout << "Initial state set" << std::endl;
-	break;
+	// 	// Pulling data out into loaded_spin
+	// 	while(! saved_spins.eof() && position < n)
+	// 	{
+    // 		saved_spins >> spin[position];
+	// 		position++;
+	// 	}
+	// 	std::cout << "Initial state set" << std::endl;
+	// break;
 	}
+	
 	// Printing
 
 	// std::cout << "Spin initialization: \n";
@@ -428,7 +419,11 @@ void Simulation::run()
 		}
 	}
 
-
+	//activate dipole interaction
+	if (constants::dipole == true){
+		std::cout << "Hello" << std::endl;
+	}
+	
 	//Set the stabilizerField
 	if (constants::geometry==4 && constants::stabilize){
 		integrator.setStabilizerField();
@@ -449,7 +444,7 @@ void Simulation::run()
 		}
 
 
-		if (i % 100 == 0)
+		if (i % 1000 == 0)
 		{
 			std::cout << "Progress: " << (float)i / constants::steps * 100 << "%\r";
 		}

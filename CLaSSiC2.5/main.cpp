@@ -63,6 +63,13 @@ int main(int argc, char *argv[])
 				constants::periodicBoundary = true;
 			}
 		}
+		else if (std::string(argv[i]) == "-dipole") {
+			if (std::string(argv[i+1]) == "false") {
+				constants::dipole = false;
+			} else {
+				constants::dipole = true;
+			}
+		}
 		else if (std::string(argv[i]) == "-stabilize"){
 			if (std::string(argv[i+1]) == "true") {
 				constants::stabilize = true;
@@ -136,11 +143,11 @@ int main(int argc, char *argv[])
 				else{
 					constants::basisPosition = {{6., 7., 0.}, {4., 6., 1.}, {2., 5., 0.}, {3., 4., 2.}, {4., 2., 3.}, {2., 3., 4.}, {0., 2., 5.}, {1., 4., 6.}, {0., 6., 7.}, {5., 0., 2.}, {6., 1., 4.}, {7., 0., 6.}, {6., 3., 0.}, {8., 2., 1.}, {7., 4., 2.}, {6., 5., 4.}, {5., 4., 6.}, {4., 6., 5.}, {2., 7., 4.}, {0., 6., 3.}, {1., 8., 2.}, {4., 2., 7.}, {2., 1., 8.}, {3., 0., 6.}};
 				}
-                constants::geometry = 7;
+				constants::geometry = 7;
 				constants::minDistance = 2.45;
 			}
 			else {
-				std::cerr << "-structure only has the following options: single, chain, square, triangle, kagome, hexagonal, cubic, hyperkagome\n";
+				std::cerr << "-structure only has the following options: single, chain, square, triangle, kagome, hexagonal, cubic, hyperkagome" << std::endl;
 			}
 		}
 

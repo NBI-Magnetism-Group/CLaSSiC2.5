@@ -27,6 +27,7 @@ namespace constants
     extern int nNeighbours;
     extern double minDistance;
     extern bool periodicBoundary;
+    extern bool dipole;
     extern bool stabilize;
 
     // Simulation parameters
