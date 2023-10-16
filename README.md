@@ -1,27 +1,29 @@
 # CLaSSiC2.5
 
 ## Installation Guide
-### Github installation
-Easiest way to get CLaSSiC is to git clone from this repository.
+### GitHub installation
+The easiest way to get CLaSSiC is to git clone from this repository.
 *  Install GIT from: https://git-scm.com/downloads 
 *  Go to the folder you want to clone to
 *  Git clone https://github.com/NBI-Magnetism-Group/CLaSSiC2.5.git
 
 ### C++ Setup
-To run CLaSSiC a C++ enviroment is needed.
+To run CLaSSiC a C++ environment is needed.
 * Install MSYS2 from: https://www.msys2.org/
-* Add the path to system variables "C:\msys64\mingw64\bin" 
+* Open the MSYS2 UCRT64 environment
+* Run the command 'pacman -S mingw-w64-ucrt-x86_64-gcc'
+* In system variables -> environment variables -> Path: Add "C:\msys64\ucrt64\bin" 
 
-### Code editor
-To run CLaSSiC a code editor is needed that both can run python and C++.
-Personal preference is Visual Studio Code, which then needs the following extensions:
+### Code Editor
+To run CLaSSiC a code editor is needed that both can run Python and C++.
+My personal preference is Visual Studio Code, which then needs the following extensions:
 * C/C++
 * python
 * pylance
 * github: pull requests and issues
 
-### Python Enviroment
-To run the plotting tools in the simulator a pyhton enviroment is needed.
+### Python Environment
+To run the plotting tools in the simulator a python environment is needed.
 
 Packages needed:
 * pyfftw
@@ -31,11 +33,11 @@ Packages needed:
 
 
 ### Task.json structure
-When everything is download and located on your computer and all the above steps are complete. Then open the 'run.bash' and press "ctrl/command"+"shift"+"b" to create the 'task.json' file.
+When everything is downloaded and located on your computer all the above steps are complete. Then open the 'run.bash' and press "ctrl/command"+"shift"+"b" to create the 'task.json' file.
 
-If this returns an error, then in the root of CLaSSiC folder, create '.vscode'-folder and in that folder create a 'tasks.json' file.
+If this returns an error, then in the root of CLaSSiC folder, create '.vscode'-folder and create a 'tasks.json' file in that folder.
 
-Else the 'tasks.json' file needs to contain:
+Else the 'tasks.json' file needs to contain the following:
 
 ```
 {
@@ -44,7 +46,7 @@ Else the 'tasks.json' file needs to contain:
     {
 			"type": "cppbuild",
 			"label": "release",
-			"command": "C:/msys64/mingw64/bin/g++.exe",
+			"command": "C:/msys64/ucrt64/bin/g++.exe",
 			"args": [
 				"-fdiagnostics-color=always",
 				"-O3",
@@ -60,23 +62,23 @@ Else the 'tasks.json' file needs to contain:
 				"kind": "build",
 				"isDefault": true
 			},
-			"detail": "compiler: C:/msys64/mingw64/bin/g++.exe"
+			"detail": "compiler: C:/msys64/ucrt64/bin/g++.exe"
 		},
 }
 ```
 
 ## Guide to run CLaSSiC
-With the 'tasks.json' set-up and the enviroments running, then open the 'run.bash' and press "ctrl/command"+"shift"+"b" to run the 'task.json' file and this should make the 'model.out' file.
+With the 'tasks.json' set-up and the environment running, then open the 'run.bash' and press "ctrl/command"+"shift"+"b" to run the 'task.json' file and this should make the 'model.out' file.
 With this file created, CLaSSiC is ready to run.
 
 
-To run CLaSSiC, you specify the struture and variables in the 'run.bash' file and then to compute the simultaion you "cd 'Location of run.bash'" in the terminal and run the command "bash run.bash".
+To run CLaSSiC, you specify the structure and variables in the 'run.bash' file and then to compute the simulation you "cd 'Location of run.bash'" in the terminal and run the command "bash run.bash".
 
 ### Variable documentation
 * Time Steps: **dt**
 	* Step width [sec]
 * Steps: **steps**
-	* Mumber of steps [#]
+	* Number of steps [#]
 * Exchange Constant: **J**
 	* [Joule]
 * Relaxation Constant: **Lambda**
@@ -86,7 +88,7 @@ To run CLaSSiC, you specify the struture and variables in the 'run.bash' file an
 * Axial Anisotropy Strength: **AnisotropyAxis**
 	* Axial anisotropy field strength [Tesla]
 * Planar Anisotropy Strength: **AnisotropyPlane**
-	* Planar anistropy field strength [Tesla]
+	* Planar anisotropy field strength [Tesla]
 * Temperature: **T**
 	* Temperature of sample/system [Kelvin]
 * Initial Spin: **Init**
@@ -102,7 +104,7 @@ To run CLaSSiC, you specify the struture and variables in the 'run.bash' file an
 		- Case 8: Uses spin orientations in the Saved_spin.dat file to initialize 
 * Angle: **angle**
 	* Angle between spins [degree]
-	* Only affects system in Ccse 1, 3, 6 & 7 
+	* Only affects the system in Case 1, 3, 6 & 7 
 * Manual zero mode: **Mode**
 	* Only used for case 2 [#]
 * Structure: **structure**
@@ -116,11 +118,11 @@ To run CLaSSiC, you specify the struture and variables in the 'run.bash' file an
 		* kagome
 		* hyperkagome	
 * Total unit cells: **nCellsX**
-	* Number of unit cellscalculated [#]
-		* Need to correlate with structure for AntiFerroMmagnetic spin	
+	* Number of unit cells calculated [#]
+		* Need to correlate with the structure for AntiFerroMagnetic spin	
 * Periodic Boundary: **PeriodicBoundary**
 	* [True/False]
 * Field stabilization: **Stabalize**
-	* Only effects if structure is kagome [True/False]
+	* Only effects if the structure is kagome [True/False]
 		* Simplifies spin calculation to only take iteration angle and not specified angle into account
 
