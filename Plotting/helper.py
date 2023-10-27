@@ -24,17 +24,17 @@ constants = {
 
     "colors" : ['b','g','r','c','m','y','b'],
 
-    "pathData" : slash+"CLaSSiC2.0"+slash+"CLaSSiC2.0"+slash+"data"+slash+"data.dat",
-    "pathFourier" : slash+"CLaSSiC2.0"+slash+"CLaSSiC2.0"+slash+"data"+slash+"fourier.dat",
-    "pathPosition" : slash+"CLaSSiC2.0"+slash+"CLaSSiC2.0"+slash+"data"+slash+"position.csv",
-    "pathEnergy" : slash+"CLaSSiC2.0"+slash+"CLaSSiC2.0"+slash+"data"+slash+"energy.dat",
-    }# 'slash+"CLaSSiC2.0"+' to accomedate filestructure 
+    "pathData" : slash+"CLaSSiC2.5"+slash+"CLaSSiC2.5"+slash+"data"+slash+"data.dat",
+    "pathFourier" : slash+"CLaSSiC2.5"+slash+"CLaSSiC2.5"+slash+"data"+slash+"fourier.dat",
+    "pathPosition" : slash+"CLaSSiC2.5"+slash+"CLaSSiC2.5"+slash+"data"+slash+"position.csv",
+    "pathEnergy" : slash+"CLaSSiC2.5"+slash+"CLaSSiC2.5"+slash+"data"+slash+"energy.dat",
+    }# 'slash+"CLaSSiC2.5"+' to accomedate filestructure 
 
 def getPath(subPath, i):
     path = os.getcwd()
     """
     Workout for calling the file from the plotting directory
-    if path[path.rfind(slash):] != slash+"CLaSSiC2.0":
+    if path[path.rfind(slash):] != slash+"CLaSSiC2.5":
         path = path[:path.rfind(slash)]
     """
     path += subPath 
