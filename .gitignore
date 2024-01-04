@@ -1,12 +1,9 @@
 #folders
-build/
-data/
-Testing/
+CLaSSiC2.5/data
+Plotting/__pycache__
+
 
 #executables
 *.exe
 *.out
 
-#vscode settings
-.vscode
-Plotting/__pycache__
