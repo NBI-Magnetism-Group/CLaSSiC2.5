@@ -1,7 +1,7 @@
 #folders
 CLaSSiC2.5/data
 Plotting/__pycache__
-
+test_*
 
 #executables
 *.exe
