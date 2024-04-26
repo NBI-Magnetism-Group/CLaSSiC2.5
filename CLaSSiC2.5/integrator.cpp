@@ -23,6 +23,8 @@ void Integrator::calculateEffectiveField(std::vector<std::vector<int>> &neighbou
 		jx = 0;
 		jy = 0;
 		jz = 0;
+		// Dipole
+		
 		// Nearest neighbours
 		for (int j : neighbours[i])
 		{
