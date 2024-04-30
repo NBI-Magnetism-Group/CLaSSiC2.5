@@ -418,11 +418,6 @@ void Simulation::run()
 			}
 		}
 	}
-
-	//activate dipole interaction
-	if (constants::dipole == true){
-		std::cout << "Hello" << std::endl;
-	}
 	
 	//Set the stabilizerField
 	if (constants::geometry==4 && constants::stabilize){

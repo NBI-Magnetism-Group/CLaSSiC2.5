@@ -19,7 +19,7 @@ mode=1
 structure=single
 nCellsX=1
 periodicBoundary=true
-dipole=true
+dipole=false
 stabilize=false
 
 ./model.out -dt $dt -steps $steps -J $J -lambda $lambda -B $B \
