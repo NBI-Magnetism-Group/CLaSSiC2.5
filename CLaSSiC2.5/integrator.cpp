@@ -27,6 +27,7 @@ void Integrator::calculateEffectiveField(std::vector<std::vector<int>> &neighbou
 		//dipole
 		if (constants::dipole == true){
 			std::cout << "Hello" << std::endl;
+			
 		}
 		// Nearest neighbours
 		for (int j : neighbours[i])

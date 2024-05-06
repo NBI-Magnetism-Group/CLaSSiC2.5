@@ -5,4 +5,4 @@ Plotting/__pycache__
 #executables
 *.exe
 *.out
-
+*.bash
