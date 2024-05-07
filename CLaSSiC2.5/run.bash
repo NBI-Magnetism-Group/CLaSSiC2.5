@@ -8,7 +8,7 @@ fi
 dt=1e-15
 steps=1e6
 J=0
-lambda=0
+lambda=1e-3
 B=5
 anisotropyAxis=0
 anisotropyPlane=0

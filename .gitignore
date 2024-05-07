@@ -1,8 +1,8 @@
 #folders
 CLaSSiC2.5/data
 Plotting/__pycache__
+CLaSSiC2.5/run.bash
 
 #executables
 *.exe
 *.out
-*.bash
