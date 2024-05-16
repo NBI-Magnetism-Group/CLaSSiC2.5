@@ -24,22 +24,22 @@ ax[0].plot(time[:end], x[fNum, atom, :end],'r', label='x')
 ax[0].plot(time[:end], y[fNum, atom, :end],'b', label='y')
 ax[0].plot(time[:end], z[fNum, atom, :end],'g', label='z')
 ax[0].legend(loc='upper right')
-#ax[0].set_xlim(0,17.85) #ca. 10 perioder
+#ax[0].set_xlim(0,1e3) #ca. 10 perioder
 ax[0].set_xlabel('Time [ps]')
 ax[0].set_ylabel('spin [-]')
-ax[0].set_title('Spin evolution')
+ax[0].set_title('Spin evolution (A)')
 
 fft_x_limit = 1.5
 ax[1].plot(helper.constants["Hz_to_meV"]*np.fft.fftfreq(param[fNum]["steps"],d=param[fNum]["dt"]), np.fft.fft(x[fNum, atom, :]).real/np.max(np.fft.fft(x[fNum, atom, :]).real))
 ax[1].set_xlim(-fft_x_limit, fft_x_limit)
 ax[1].set_xlabel('Energy [meV]')
 ax[1].set_ylabel('relative counts [-]')
-ax[1].set_title('Fourier transform')
+ax[1].set_title('Fourier transform (B)')
 
 ax[2].plot(x[fNum, atom, :end], y[fNum, atom, :end],'r')
 ax[2].set_xlabel('x')
 ax[2].set_ylabel('y')
-ax[2].set_title('x-y plane')
+ax[2].set_title('x-y plane (C)')
 
 # plt.axis('equal')
 plt.show()

@@ -27,7 +27,6 @@ void Integrator::calculateEffectiveField(std::vector<std::vector<int>> &neighbou
 		//dipole
 		if (constants::dipole == true){
 			std::cout << "Hello" << std::endl;
-			
 		}
 		// Nearest neighbours
 		for (int j : neighbours[i])
@@ -36,7 +35,7 @@ void Integrator::calculateEffectiveField(std::vector<std::vector<int>> &neighbou
 			jy += spin[3 * j + 1];
 			jz += spin[3 * j + 2];
 		}
-		effectiveField[3 * i]     += constants::exchangePrefactor * jx;	 // x
+		effectiveField[3 * i]     += constants::exchangePrefactor * jx;	// x
 		effectiveField[3 * i + 1] += constants::exchangePrefactor * jy; // y
 		effectiveField[3 * i + 2] += constants::exchangePrefactor * jz; // z
 
