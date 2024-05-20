@@ -14,7 +14,7 @@ void Integrator::calculateEffectiveField(std::vector<std::vector<int>> &neighbou
 	for (int i = 0; i < constants::nAtoms; i++)
 	{
 		// External field
-		memcpy(&effectiveField[3 * i], &constants::magneticField, sizeof(constants::magneticField)); // set to external field
+		memcpy(&effectiveField[3 * i], &constants::magneticField, sizeof(constants::magneticField));
 
 		// Anisotropy
 		effectiveField[3 * i + 2] += constants::anisotropyAxis * spin[3 * i + 2];
@@ -26,7 +26,7 @@ void Integrator::calculateEffectiveField(std::vector<std::vector<int>> &neighbou
 		
 		//dipole
 		if (constants::dipole == true){
-			std::cout << "Hello" << std::endl;
+			std::cout << "To Be Implemented" << std::endl;
 		}
 		// Nearest neighbours
 		for (int j : neighbours[i])
