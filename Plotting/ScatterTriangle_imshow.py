@@ -17,16 +17,25 @@ def getFasterTransform(sx,sy,sz,qScatter, i = 0):
     print(f'nScatter: {qScatter.shape[0]}')
     pathFourier = helper.getPath(helper.constants["pathFourier"], i)
     makenew = True #if i want to calculate new fourier
+
+    theta = np.pi/3*0 #rotates data
+    sa = np.cos(theta)*sx[:,:]-np.sin(theta)*sy[:,:]
+    sb = np.cos(theta)*sy[:,:]+np.sin(theta)*sx[:,:]
+    LP2 = np.zeros_like(latticePosition)
+    LP2[:,0] = np.cos(theta)*latticePosition[:,0]-np.sin(theta)*latticePosition[:,1]
+    LP2[:,1] = np.cos(theta)*latticePosition[:,1]+np.sin(theta)*latticePosition[:,0]
+    LP2[:,2] = latticePosition[:,2]
+
     if not os.path.exists(pathFourier) or makenew:
         print("Calculating")
         start = time.time()
         print("x: ")
-        I_total_x = helper.getF_to_I_dp(sx[:,:],qScatter,maxEnergyIndex,param,latticePosition,0)
+        I_total_x = helper.getF_to_I_dp(sa[:,:],qScatter,maxEnergyIndex,param,LP2,0)
         print("y: ")
-        I_total_y = helper.getF_to_I_dp(sy[:,:],qScatter,maxEnergyIndex,param,latticePosition,0)
+        I_total_y = helper.getF_to_I_dp(sb[:,:],qScatter,maxEnergyIndex,param,LP2,0)
         print("z: ")
-        I_total_z = helper.getF_to_I_dp(sz[:,:],qScatter,maxEnergyIndex,param,latticePosition,0)
-        I_total =   I_total_x**2 + I_total_y**2 + I_total_z**2
+        I_total_z = helper.getF_to_I_dp(sz[:,:],qScatter,maxEnergyIndex,param,LP2,0)
+        I_total =   np.sqrt(I_total_x**2 + I_total_y**2 + I_total_z**2)
         I_total.tofile(pathFourier)
         I_total = I_total.reshape((nScatter, maxEnergyIndex))
         print(f'total duration: {time.time()-start}')
@@ -119,12 +128,14 @@ J = param[fNum]['J']*helper.constants['boltzmann']*helper.constants["J_to_meV"]
 #     pathFourier = helper.getPath(helper.constants["pathFourier"], fNum)
 # fNum = 0
 
-#Using the helper function to find the q vectors for the chain
+#Using the helper function to find the q vectors for the triangle
 
-q_100 = helper.scatterLine(int(sideLength/2))
+#q_100 = helper.scatterLine(int(sideLength/2))
+
+q_100 = helper.scatterLine5(int(sideLength/2))
+#q_100 = helper.scatterTriangle3(int(sideLength/2))
 nScatter = q_100.shape[0]
 q_leng = np.linalg.norm(q_100,axis=1)
-
 # summing over all of the modes (Havn't tested this code with only one simulated mode, but think it should work)
 
 for i in range(x.shape[0]):
@@ -136,7 +147,7 @@ for i in range(x.shape[0]):
 
 ############# Plotting ###############
 plt.figure()
-maxind = np.where(energies>=10)[0][0] # the max energi on the y axis 
+maxind = np.where(energies>=200)[0][0] # the max energi on the y axis 
 
 #### find ticks
 ytic = np.linspace(0,maxind,9)
@@ -145,7 +156,7 @@ xtic = np.array([0,5,10,15,20])
 xtlab = [r'$-\pi$',r'$-\pi /2$','0',r'$\pi /2$',r'$\pi$']
 
 # aspect: controles the dimensions of the image produced
-plt.imshow(np.log(I_total[:,:maxind]).T,aspect = 4/500,origin  ='lower',interpolation='none',vmin =0)#,vmax=12)#,vmax=8,vmin=6)#cmap="nipy_spectral",
+plt.imshow(np.log(I_total[:,:maxind]).T,aspect = 4/100,origin  ='lower',interpolation='none',vmin =0)#,vmax=12)#,vmax=8,vmin=6)#cmap="nipy_spectral",
 plt.yticks(ytic,ytlab)
 plt.xticks(xtic,xtlab)
 cbar = plt.colorbar()
@@ -154,8 +165,8 @@ cbar.set_label(r'Intensity [A.U.]')
 ###### Plot theory ######
 #calculatets the theoretical value of the q vectors
 if param[fNum]['J']>0:
-    theo = np.abs(helper.constants["J_to_meV"]*(4*param[fNum]["J"]*3.5*(1-np.cos(q_leng[:]))+helper.constants["gFactor"]*helper.constants["bohrMagneton"]*(param[fNum]["magneticField"][-1]+param[fNum]["anisotropyStrength"])))
-elif param[fNum]['J']<0:
+    theo = np.abs(helper.constants["J_to_meV"]*(8*param[fNum]["J"]*3.5*(1-np.cos(q_leng[:]))+helper.constants["gFactor"]*helper.constants["bohrMagneton"]*(param[fNum]["magneticField"][-1]+param[fNum]["anisotropyStrength"])))
+elif param[fNum]['J']<0: #change thory for AFM
     a1 = (4*param[fNum]["J"]*3.5)**2*(1-np.cos(q_leng[:])**2)
     a2 = -8*param[fNum]["J"]*3.5*helper.constants["gFactor"]*helper.constants["bohrMagneton"]*param[fNum]["anisotropyStrength"]
     a3 = (helper.constants["gFactor"]*helper.constants["bohrMagneton"]*param[fNum]["anisotropyStrength"])**2
@@ -173,6 +184,7 @@ elif param[fNum]['J']<0:
         plt.plot(ind_x,ind_2, '--w',alpha = 0.5)
      
 # Puts the theoretical values into arrays, so they can be plotted ontop of the image
+
 for i in range(len(theo)):
     if i ==0:
         ind = np.array([np.where(energies>=theo[i])[0][0]])
@@ -186,6 +198,9 @@ plt.plot(ind_x,ind, '--w',alpha = 0.5)
 #plt.title(r'T = 0K, B = 3T, D = 0.1T')
 print(energies[ind])
 print(param[0])
-plt.xlabel(r'\textbf{Q} = (\textit{h00}) [$Å ^{-1}$]')
-plt.ylabel(r'\textit{Energy} [meV]')
+#plt.xlabel(r'\textbf{Q} = (\textit{h00}) [$Å ^{-1}$]')
+#plt.ylabel(r'\textit{Energy} [meV]')
+plt.xlabel(r'q = ({h00}) [$Å ^{-1}$]')
+plt.ylabel(r'Energy [meV]')
 plt.show()
+

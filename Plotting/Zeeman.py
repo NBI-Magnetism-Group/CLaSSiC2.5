@@ -17,8 +17,11 @@ print(f'final length: {np.sqrt(x[fNum, atom, -1]**2 + y[fNum, atom, -1]**2 + z[f
 print(f'Average Z-Pos: {np.average(z[fNum, atom, int(len(z[fNum, atom,:]) * 0.9):])}')
 precession = helper.constants["Hz_to_meV"]*np.fft.fftfreq(param[fNum]["steps"],d=param[fNum]["dt"])[np.argmax(np.fft.fft(x[fNum, atom, :]))]
 theory = helper.constants["Hz_to_meV"]*helper.constants["gamma"]*param[fNum]["magneticField"][-1]/(2*np.pi)
-print(f'precession energy: {precession} meV, theoretical: {theory} meV, error: {theory/precession}')
-"""
+#print(f'precession energy: {precession} meV, theoretical: {theory} meV, error: {theory/precession}')
+print(f'precession energy: {precession} meV, theoretical: {theory}')
+#temp reduced due to div by 0
+
+
 end = int(2e5)
 ax[0].plot(time[:end], x[fNum, atom, :end],'r', label='x')
 ax[0].plot(time[:end], y[fNum, atom, :end],'b', label='y')

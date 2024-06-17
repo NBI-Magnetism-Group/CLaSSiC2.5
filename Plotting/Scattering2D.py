@@ -58,24 +58,24 @@ def runTransform():
             I_total[i, j, :] = I_aa[0, :maxEnergyIndex]
 
     try:
-        os.remove(os.getcwd() + "\\CLaSSiC2.0\\data\\fourier.dat")
-        os.remove(os.getcwd() + "\\CLaSSiC2.0\\data\\energyIndex.dat")
+        os.remove(os.getcwd() + "\\CLaSSiC2.5\\data\\fourier0.dat")
+        os.remove(os.getcwd() + "\\CLaSSiC2.5\\data\\energyIndex.dat")
     except:
         print("Error while deleting files")
-    I_total.tofile(os.getcwd() + "\\CLaSSiC2.0\\data\\fourier.dat")
-    eIndex.tofile(os.getcwd() + "\\CLaSSiC2.0\\data\\energyIndex.dat")
+    I_total.tofile(os.getcwd() + "\\CLaSSiC2.5\\data\\fourier0.dat")
+    eIndex.tofile(os.getcwd() + "\\CLaSSiC2.5\\data\\energyIndex.dat")
 
     return I_total, eIndex
 
-recalculate = False
+recalculate = True
 if recalculate:
     start = time.time()
     I_total, eIndex = runTransform()
     print(f'duration: {time.time()-start}')
 else:
-    I_total = np.fromfile(os.getcwd() + "\\CLaSSiC2.0\\data\\fourier.dat")
+    I_total = np.fromfile(os.getcwd() + "\\CLaSSiC2.5\\data\\fourier0.dat")
     I_total = I_total.reshape((sideLength, sideLength, maxEnergyIndex))
-    eIndex = np.fromfile(os.getcwd() + "\\CLaSSiC2.0\\data\\energyIndex.dat").astype(np.int32)
+    eIndex = np.fromfile(os.getcwd() + "\\CLaSSiC2.5\\data\\energyIndex.dat").astype(np.int32)
 
 eIndex = eIndex[energies[eIndex].argsort()]
 values, bins, _ = plt.hist(energies[eIndex], bins=144)

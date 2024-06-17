@@ -48,12 +48,13 @@ void Simulation::load()
 	int offset = 0;
 	for (int dim = 0; dim < constants::nDimensions; dim++)
 	{
+		int offset = 0;
 		for (int cell = 1; cell < constants::nUnitCells; cell++)
 		{
 			if (constants::nDimensions>1){
 				if (position.size()%(3*constants::basisPosition.size()*2*constants::nUnitCells)==0 && constants::unitVectors[1][0]!=0){
 					offset++;
-					// std::cout << "Position size: " << position.size()/3 << std::endl;
+					// std::cout << "Position size: " << position.size()/3 << " " << offset <<" " << dim << std::endl;
 				}
 			}
 			// std::cout <<  std::pow(constants::nUnitCells, dim) << std::endl;
@@ -63,10 +64,10 @@ void Simulation::load()
 				for (int k=0; k<constants::basisPosition.size(); k++){
 					for (int j = 0; j < 3; j++)
 					{
-						// std::cout << "vec: "<<  constants::unitVectors[dim][j] << std::endl;
+						// std::cout << "vec: "<<  constants::unitVectors[0][j] << std::endl;
 						// position.push_back(position[3 * i * dim + j + 3*(k*(1+i))] + (constants::unitVectors[dim][j]) * cell-(constants::unitVectors[0][j])*offset);
 						// std::cout << position.size()/3 << ": "<<position[3 * k + 3 * i + j] << " | " <<  (constants::unitVectors[dim][j]) * cell << " | " << -(constants::unitVectors[1][j])*offset << std::endl;
-						if (j==0){
+						if (j==0 && dim !=2){
 							position.push_back(position[3 * k + constants::basisPosition.size() * 3 * i + j]+constants::unitVectors[dim][j] * cell-(constants::unitVectors[0][j])*offset);
 						} else {
 							position.push_back(position[3 * k + constants::basisPosition.size() * 3 * i + j]+constants::unitVectors[dim][j] * cell);

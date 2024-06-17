@@ -139,6 +139,26 @@ int main(int argc, char *argv[])
                 constants::geometry = 7;
 				constants::minDistance = 2.45;
 			}
+			//Nicklas: Test of 3d hexagonal and triangle using existing hexagon
+			else if (std::string(argv[i+1])== "hexagonal3D") {
+				double LayerSep = 1;
+				constants::nDimensions = 3;
+				constants::nNeighbours = 5;
+				constants::unitVectors = {{std::sqrt(3), 0., 0.}, {std::sqrt(3)*std::cos(constants::pi/3.), std::sqrt(3)*std::sin(constants::pi/3.), 0.}, {std::sqrt(3), 0., LayerSep}};
+				constants::basisPosition = {{0., 0., 0.}, {std::cos(constants::pi/6.), -std::sin(constants::pi/6.), 0.}};
+				constants::geometry = 8;
+			}
+			else if (std::string(argv[i+1]) == "triangle3D") {
+				double LayerSep = 1;
+				constants::nDimensions = 3;
+				constants::nNeighbours = 8;
+				constants::unitVectors = {{1., 0., 0.}, {std::cos(constants::pi/3.), std::sin(constants::pi/3.), 0.}, {0, 0., LayerSep}};
+				constants::basisPosition = {{0., 0., 0.}};
+				constants::geometry = 9;
+				std::cout << "Unit vectors:\n";
+				std::cout << "a0: " << constants::unitVectors[0][0] << ", " << constants::unitVectors[0][1] << ", " << constants::unitVectors[0][2] << std::endl;
+				std::cout << "a1: " << constants::unitVectors[1][0] << ", " << constants::unitVectors[1][1] << ", " << constants::unitVectors[1][2] << std::endl;
+			} 
 			else {
 				std::cerr << "-structure only has the following options: single, chain, square, triangle, kagome, hexagonal, cubic, hyperkagome\n";
 			}

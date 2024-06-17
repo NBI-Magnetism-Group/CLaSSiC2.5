@@ -24,10 +24,10 @@ constants = {
 
     "colors" : ['b','g','r','c','m','y','b'],
 
-    "pathData" : slash+"CLaSSiC2.0"+slash+"CLaSSiC2.0"+slash+"data"+slash+"data.dat",
-    "pathFourier" : slash+"CLaSSiC2.0"+slash+"CLaSSiC2.0"+slash+"data"+slash+"fourier.dat",
-    "pathPosition" : slash+"CLaSSiC2.0"+slash+"CLaSSiC2.0"+slash+"data"+slash+"position.csv",
-    "pathEnergy" : slash+"CLaSSiC2.0"+slash+"CLaSSiC2.0"+slash+"data"+slash+"energy.dat",
+    "pathData" : slash+"CLaSSiC2.5"+slash+"data"+slash+"data.dat",
+    "pathFourier" : slash+"CLaSSiC2.5"+slash+"data"+slash+"fourier.dat",
+    "pathPosition" : slash+"CLaSSiC2.5"+slash+"data"+slash+"position.csv",
+    "pathEnergy" : slash+"CLaSSiC2.5"+slash+"data"+slash+"energy.dat",
     }# 'slash+"CLaSSiC2.0"+' to accomedate filestructure 
 
 def getPath(subPath, i):
@@ -108,6 +108,11 @@ def getData():
             parameters["unitVectors"] = np.array([[8., 0., 0.],[0., 8., 0.],[0., 0., 8.]])
             if save_time:
                 parameters["basisPosition"] = np.array([[6.,7.,0.],[4.,6.,1.],[2.,5.,0.],[3.,4.,2.],[4.,2.,3.],[2.,3.,4.],[0.,2.,5.],[1.,4.,6.],[0.,6.,7.],[5.,0.,2.],[6.,1.,4.],[7.,0.,6.]])
+        elif parameters["geometry"] == 8:
+            parameters["geometry"] = "hexagonal3D"
+            parameters["nDimensions"] = 3
+            parameters["basisPosition"] = np.array([[0., 0., 0.], [np.cos(np.pi/6.), -np.sin(np.pi/6.), 0.]])
+            parameters["unitVectors"] = np.array([[np.sqrt(3), 0., 0.], [np.sqrt(3)*np.cos(np.pi/3.), np.sqrt(3)*np.sin(np.pi/3.), 0.], [0., 0., np.sqrt(3)]]) # type: ignore
         i += 1
         path = getPath(constants["pathData"], i)
     if i==0:
@@ -180,6 +185,42 @@ def scatterLine(size):
     q = np.delete(q, 0, axis=0)
     return q
 
+def scatterLine2(size):
+    print(f'chain lattice')
+    q = np.array([0, 0, 0])
+    q = reciprocalPath([-1/2*np.pi, -np.sqrt(3)/2*np.pi, 0], [0, 0, 0], q, size)
+    q = reciprocalPath([0, 0, 0], [1/2*np.pi, np.sqrt(3)/2*np.pi, 0], q, size)
+    q = np.delete(q, 0, axis=0)
+    return q
+
+def scatterLine3(size):
+    print(f'chain lattice')
+    q = np.array([0, 0, 0])
+    q = reciprocalPath([-1/np.sqrt(2)*np.pi, -1/np.sqrt(2)*np.pi, 0], [0, 0, 0], q, size)
+    q = reciprocalPath([0, 0, 0], [1/np.sqrt(2)*np.pi, 1/np.sqrt(2)*np.pi, 0], q, size)
+    q = np.delete(q, 0, axis=0)
+    return q
+
+def scatterLine4(size):
+    print(f'chain lattice')
+    theta = np.pi/6
+    q = np.array([0, 0, 0])
+    #q = reciprocalPath([-2*np.pi, 0, 0], [0, 0, 0], q, size)
+    q = reciprocalPath([0, 0, 0], [2*np.pi*np.cos(theta), 2*np.pi*np.sin(theta), 0], q, size)
+    q = np.delete(q, 0, axis=0)
+    return q
+
+def scatterLine5(size):
+    print(f'chain lattice')
+    q = np.array([0, 0, 0])
+    theta = np.pi/2
+    phi = np.pi/2
+    r = 2
+    q = reciprocalPath([-r*np.pi*np.cos(theta)*np.sin(phi), -r*np.pi*np.sin(theta)*np.sin(phi), r*np.cos(phi)], [0, 0, 0], q, size)
+    q = reciprocalPath([0, 0, 0], [r*np.pi*np.cos(theta)*np.sin(phi), r*np.pi*np.sin(theta)*np.sin(phi), r*np.cos(phi)], q, size)
+    q = np.delete(q, 0, axis=0)
+    return q
+
 def scatterSquare(size):
     print(f'square lattice')
     q = np.array([0, 0, 0])
@@ -194,6 +235,24 @@ def scatterTriangle(size):
     q = np.array([0, 0, 0])
     q = reciprocalPath([0,0,0], [np.pi, -1/np.sqrt(3)*np.pi, 0], q, size)
     q = reciprocalPath([np.pi,-1/np.sqrt(3)*np.pi,0], [np.pi, 0, 0], q, size)
+    q = reciprocalPath([np.pi, 0, 0], [0,0,0], q, size)
+    q = np.delete(q, 0, axis=0)
+    return q
+
+def scatterTriangle2(size):
+    print(f'triangluar lattice')
+    q = np.array([0, 0, 0])
+    q = reciprocalPath([0,0,0], [1/2*np.pi, np.sqrt(3)/2*np.pi, 0], q, size)
+    q = reciprocalPath([1/2*np.pi,np.sqrt(3)/2*np.pi,0], [np.pi, 0, 0], q, size)
+    q = reciprocalPath([np.pi, 0, 0], [0,0,0], q, size)
+    q = np.delete(q, 0, axis=0)
+    return q
+
+def scatterTriangle3(size):
+    print(f'triangluar lattice')
+    q = np.array([0, 0, 0])
+    q = reciprocalPath([0,0,0], [1/2*np.pi, np.sqrt(3)/4*np.pi, 0], q, size)
+    q = reciprocalPath([1/2*np.pi,np.sqrt(3)/4*np.pi,0], [np.pi, 0, 0], q, size)
     q = reciprocalPath([np.pi, 0, 0], [0,0,0], q, size)
     q = np.delete(q, 0, axis=0)
     return q
@@ -342,6 +401,10 @@ def getF_to_I_dp(spin, qScatter,maxEnergyIndex, param, latticePosition,fNum=0):
             I_aa[j,:] *= np.exp(1j * np.dot(qScatter[i,:], latticePosition[j,:]) )
         
         I_aa = np.sum(I_aa, axis = 0)
+        ttt = 0j
+        for j in range(param[fNum]["atoms"]):
+            ttt += spin[j,5000]*np.exp(-1j * np.dot(qScatter[i,:], latticePosition[j,:]))
+        #I_aa *= ttt
         I_aa = abs(I_aa[:maxEnergyIndex])
         I_total[ i, : ] = I_aa
     print(f'duration: {time.time()-start}')

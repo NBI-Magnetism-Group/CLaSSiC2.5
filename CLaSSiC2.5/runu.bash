@@ -7,23 +7,21 @@ fi
 
 dt=1e-15
 steps=1e6
-J=1 
+J=2
 lambda=1e-3
-B=0
+B=10
 anisotropyAxis=0
 anisotropyPlane=0
-T=1
-init=0
-angle=45
-mode=1
-structure=triangle
-nCellsX=20 #use 20 due to plots
+T=0
+init=2
+angle=0
+mode=2
+structure=chain
+nCellsX=30
 periodicBoundary=true
-#dipole=false
 stabilize=false
 
 ./model.out -dt $dt -steps $steps -J $J -lambda $lambda -B $B \
 -anisotropyAxis $anisotropyAxis -anisotropyPlane $anisotropyPlane \
 -T $T -init $init -angle $angle -mode $mode -nCellsX $nCellsX \
 -structure $structure -periodicBoundary $periodicBoundary -stabilize $stabilize
-#Added .out to correspond to file    -dipole $dipole
