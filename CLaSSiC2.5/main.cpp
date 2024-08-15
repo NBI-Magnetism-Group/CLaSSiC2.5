@@ -24,7 +24,13 @@ int main(int argc, char *argv[])
 			constants::burnInSteps = (int)std::stod(argv[i+1]);
 		}
 		else if (std::string(argv[i]) == "-J"){
-			constants::J = std::stod(argv[i+1])*constants::boltzmann;
+			constants::J = std::stod(argv[i+1])*1.60217663e-22; //important to remember unit conversion
+		}
+		else if (std::string(argv[i]) == "-Jz"){
+			constants::Jz = std::stod(argv[i+1])*1.60217663e-22;
+		}
+		else if (std::string(argv[i]) == "-Jx"){
+			constants::Jx = std::stod(argv[i+1])*1.60217663e-22;
 		}
 		else if (std::string(argv[i]) == "-lambda"){
 			constants::lambda = std::stod(argv[i+1]);
@@ -33,11 +39,11 @@ int main(int argc, char *argv[])
 			constants::magneticField[2] = std::stod(argv[i+1]);
 		}
 		else if (std::string(argv[i]) == "-anisotropyAxis"){
-			constants::anisotropyAxis = std::stod(argv[i+1]);
+			constants::anisotropyAxis = std::stod(argv[i+1])*1.60217663e-22;
 			std::cout << "anisotropyAxis: " << constants::anisotropyAxis << std::endl;
 		}
 		else if (std::string(argv[i]) == "-anisotropyPlane"){
-			constants::anisotropyPlane = std::stod(argv[i+1]);
+			constants::anisotropyPlane = std::stod(argv[i+1])*1.60217663e-22;
 			std::cout << "anisotropyPlane: " << constants::anisotropyPlane << std::endl;
 		}
 		else if (std::string(argv[i]) == "-T"){
@@ -95,7 +101,11 @@ int main(int argc, char *argv[])
 			else if (std::string(argv[i+1]) == "triangle") {
 				constants::nDimensions = 2;
 				constants::nNeighbours = 6;
-				constants::unitVectors = {{1., 0., 0.}, {std::cos(constants::pi/3.), std::sin(constants::pi/3.), 0.}};
+				//constants::unitVectors = {{1., 0., 0.}, {std::cos(constants::pi/3.), std::sin(constants::pi/3.), 0.}};
+				constants::unitVectors = {{1., 0., 0.}, {-std::cos(constants::pi/3.), std::sin(constants::pi/3.), 0.}};
+				//constants::unitVectors = {{std::sqrt(2.), 0., 0.}, {std::cos(constants::pi/4.), std::sin(constants::pi/4.), 0.}};
+				//constants::unitVectors = {{10., 0., 0.}, {std::cos(constants::pi/2.+constants::pi/40.), std::sin(constants::pi/2.+constants::pi/40.), 0.}};
+				//constants::unitVectors = {{10., 0., 0.}, {0, 1, 0.}};
 				constants::basisPosition = {{0., 0., 0.}};
 				constants::geometry = 3;
 				std::cout << "Unit vectors:\n";
@@ -105,7 +115,7 @@ int main(int argc, char *argv[])
 			else if (std::string(argv[i+1]) == "kagome") {
 				constants::nDimensions = 2;
 				constants::nNeighbours = 4;
-				constants::unitVectors = {{2., 0., 0.}, {2. * std::cos(constants::pi/3.), 2. * std::sin(constants::pi/3.), 0.}};
+				constants::unitVectors = {{2., 0., 0.}, {2. * std::cos(constants::pi/2.), 2. * std::sin(constants::pi/2.), 0.}};
 				constants::basisPosition = {{0., 0., 0.}, {1., 0., 0.}, {1. * std::cos(constants::pi/3.), 1. * std::sin(constants::pi/3.), 0.}};
 				constants::geometry = 4;
 			}
@@ -152,13 +162,20 @@ int main(int argc, char *argv[])
 				double LayerSep = 1;
 				constants::nDimensions = 3;
 				constants::nNeighbours = 8;
-				constants::unitVectors = {{1., 0., 0.}, {std::cos(constants::pi/3.), std::sin(constants::pi/3.), 0.}, {0, 0., LayerSep}};
+				constants::unitVectors = {{1., 0., 0.}, {std::cos(constants::pi/3.), std::sin(constants::pi/3.), 0.}, {0.5, std::sqrt(3)/2, LayerSep}};
 				constants::basisPosition = {{0., 0., 0.}};
 				constants::geometry = 9;
 				std::cout << "Unit vectors:\n";
 				std::cout << "a0: " << constants::unitVectors[0][0] << ", " << constants::unitVectors[0][1] << ", " << constants::unitVectors[0][2] << std::endl;
 				std::cout << "a1: " << constants::unitVectors[1][0] << ", " << constants::unitVectors[1][1] << ", " << constants::unitVectors[1][2] << std::endl;
 			} 
+			else if (std::string(argv[i+1]) == "squarexz") {
+				constants::nDimensions = 3;
+				constants::nNeighbours = 6;
+				constants::unitVectors = {{1., 0., 0.}, {0., 2., 0.}, {0., 0., 1.}};
+				constants::basisPosition = {{0., 0., 0.}};
+				constants::geometry = 6;
+			}
 			else {
 				std::cerr << "-structure only has the following options: single, chain, square, triangle, kagome, hexagonal, cubic, hyperkagome\n";
 			}

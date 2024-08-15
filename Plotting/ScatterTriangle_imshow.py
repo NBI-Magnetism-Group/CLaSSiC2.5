@@ -104,15 +104,15 @@ def get_avg_M(q,I,maxEnergyIndex,windowith=100,plot_int=False,scale=False):
 
 ############# import and set variables ##############
 fNum = 0
-param, x, y, z = helper.getData()
+param, x, y, z = helper.getData2(fNum)
 
 frequencies = np.fft.fftfreq(param[fNum]["steps"], param[fNum]["dt"])
-energies = 4.1357e-12 * frequencies
+energies = 4.1357e-12 * frequencies#/10
 maxEnergyIndex = int(param[fNum]["steps"]//2+1)
 
 pathFourier = helper.getPath(helper.constants["pathFourier"], fNum)
 sideLength = param[fNum]["nUnitCells"]
-
+spin = 2
 con_ptr = 1
 
 BField = param[fNum]['magneticField']
@@ -132,8 +132,9 @@ J = param[fNum]['J']*helper.constants['boltzmann']*helper.constants["J_to_meV"]
 
 #q_100 = helper.scatterLine(int(sideLength/2))
 
+#q_100 = helper.scatterLine6(int(sideLength/2))
+#q_100 = helper.scatterTriangle6(int(sideLength/2))
 q_100 = helper.scatterLine5(int(sideLength/2))
-#q_100 = helper.scatterTriangle3(int(sideLength/2))
 nScatter = q_100.shape[0]
 q_leng = np.linalg.norm(q_100,axis=1)
 # summing over all of the modes (Havn't tested this code with only one simulated mode, but think it should work)
@@ -147,33 +148,63 @@ for i in range(x.shape[0]):
 
 ############# Plotting ###############
 plt.figure()
-maxind = np.where(energies>=200)[0][0] # the max energi on the y axis 
+maxind = np.where(energies>=400)[0][0] # the max energi on the y axis 
 
 #### find ticks
 ytic = np.linspace(0,maxind,9)
 ytlab = [str(round(energies[int(ytic[i])],2)) for i in range(len(ytic))]
-xtic = np.array([0,5,10,15,20])
+xtic = np.linspace(0,nScatter,5)
 xtlab = [r'$-\pi$',r'$-\pi /2$','0',r'$\pi /2$',r'$\pi$']
+#xtlab = [r'$-2\pi$',r'$-\pi$','0',r'$\pi$',r'$2\pi$']
+
+#xtic = np.array([0, (nScatter-1)/(1+3**(3/2)/4), (nScatter-1)*(1+np.sqrt(3)/2)/(1+3**(3/2)/4), nScatter-1])
+#xtlab = ['M','$\Gamma$','K','M']
+
+#xtic = np.array([0, (nScatter-1)/3, (nScatter-1)/2, (nScatter-1)*2/3, nScatter-1])
+#xtlab = ['$\Gamma$',"$\Gamma$'", "M'","$\Gamma$'",'$\Gamma$']
+
+
 
 # aspect: controles the dimensions of the image produced
-plt.imshow(np.log(I_total[:,:maxind]).T,aspect = 4/100,origin  ='lower',interpolation='none',vmin =0)#,vmax=12)#,vmax=8,vmin=6)#cmap="nipy_spectral",
+plt.imshow(np.log(I_total[:,:maxind]).T,aspect = "auto",origin  ='lower',interpolation='none',vmin=0, vmax=12)#,vmax=8,vmin=6)#cmap="nipy_spectral",
 plt.yticks(ytic,ytlab)
 plt.xticks(xtic,xtlab)
 cbar = plt.colorbar()
-cbar.set_label(r'Intensity [A.U.]')
+cbar.set_label(r'Simulated log S($\mathbf{Q}$,$\omega$) [A.U.]')
 
+theoscaller=20
 ###### Plot theory ######
 #calculatets the theoretical value of the q vectors
 if param[fNum]['J']>0:
-    theo = np.abs(helper.constants["J_to_meV"]*(8*param[fNum]["J"]*3.5*(1-np.cos(q_leng[:]))+helper.constants["gFactor"]*helper.constants["bohrMagneton"]*(param[fNum]["magneticField"][-1]+param[fNum]["anisotropyStrength"])))
-elif param[fNum]['J']<0: #change thory for AFM
-    a1 = (4*param[fNum]["J"]*3.5)**2*(1-np.cos(q_leng[:])**2)
-    a2 = -8*param[fNum]["J"]*3.5*helper.constants["gFactor"]*helper.constants["bohrMagneton"]*param[fNum]["anisotropyStrength"]
+    theo = np.abs(helper.constants["J_to_meV"]*(8*param[fNum]["J"]*spin*(1-np.cos(q_leng[:]))+helper.constants["gFactor"]*helper.constants["bohrMagneton"]*(param[fNum]["magneticField"][-1]+param[fNum]["anisotropyStrength"])))
+elif param[fNum]['J']<0: #change theory for AFM
+    #a = theoscaller*2*spin*abs(param[fNum]["J"])*np.sqrt(4-(np.cos(q_100[:,0])+1)**2)
+    #a = 4*spin*abs(param[fNum]["J"])*abs(np.sin(q_100[:,0]))
+    a = theoscaller*2*spin*abs(param[fNum]["J"])*np.sqrt(9-(np.cos(q_100[:,0])+2)**2)
+    #a = theoscaller*2*spin*abs(param[fNum]["J"])*np.sqrt((2.1)**2-(np.cos(q_100[:,0])+1.1)**2)
+    #gamma = 1/3*(np.cos(q_100[:,0])+2*np.cos(q_100[:,0]/2)*np.cos(q_100[:,1]*np.sqrt(3)/2))
+    #a = 3*abs(param[fNum]["J"])*spin*np.sqrt((1-gamma)*(1+2*gamma))
+    #a = 10*2*spin*abs(param[fNum]["J"])*np.sqrt(1-(np.cos(q_100[:,0]))**2)
+    #a = 10*theoscaller*2*spin*abs(param[fNum]["J"])*np.sqrt((1+0.1)**2-(np.cos(q_100[:,0])+0.1)**2)
+    #a = theoscaller*2*spin*abs(param[fNum]["J"])*np.sqrt(1-(np.cos(q_100[:,0])**2))
+    """
+    #a1 = (2*4*param[fNum]["J"]*spin)**2*(1-np.cos(q_leng[:])**2)
+    #a1 = (param[fNum]["J"]*spin)**2*(4**2-2**2*(np.cos(q_leng[:]/np.sqrt(2))*2)**2)*3.5**2
+    #a1 = (param[fNum]["J"]*spin)**2*(6**2-2**2*(np.cos(q_100[:,0])+np.cos(q_100[:,0]/2+q_100[:,1]*np.sqrt(3)/2)+np.cos(-q_100[:,0]/2+q_100[:,1]*np.sqrt(3)/2))**2)
+    gamma = 1/3*(np.cos(q_100[:,0])+2*np.cos(q_100[:,0]/2)*np.cos(q_100[:,1]*np.sqrt(3)/2))
+    a1 = 3.5**2*(3*param[fNum]["J"]*spin)**2*(1-gamma)*(1+2*gamma)
+    
+    a2 = -8*param[fNum]["J"]*spin*helper.constants["gFactor"]*helper.constants["bohrMagneton"]*param[fNum]["anisotropyStrength"]
     a3 = (helper.constants["gFactor"]*helper.constants["bohrMagneton"]*param[fNum]["anisotropyStrength"])**2
     b = a1+a2+a3
-    theo = helper.constants["J_to_meV"]*(np.sqrt(a1 + a2 + a3)+helper.constants["gFactor"]*helper.constants["bohrMagneton"]*param[fNum]["magneticField"][-1])
+    """
+    #theo = helper.constants["J_to_meV"]*(np.sqrt(a1 + a2 + a3)+helper.constants["gFactor"]*helper.constants["bohrMagneton"]*param[fNum]["magneticField"][-1])
+    theo = helper.constants["J_to_meV"]*(a+helper.constants["gFactor"]*helper.constants["bohrMagneton"]*param[fNum]["magneticField"][-1])
+    print(theo)
+    """
     if param[fNum]["magneticField"][-1] != 0:
-        theo_2 = np.abs(helper.constants["J_to_meV"]*(np.sqrt(a1 + a2 + a3)-helper.constants["gFactor"]*helper.constants["bohrMagneton"]*param[fNum]["magneticField"][-1]))
+        #theo_2 = np.abs(helper.constants["J_to_meV"]*(np.sqrt(a1 + a2 + a3)-helper.constants["gFactor"]*helper.constants["bohrMagneton"]*param[fNum]["magneticField"][-1]))
+        theo_2 = np.abs(helper.constants["J_to_meV"]*(a-helper.constants["gFactor"]*helper.constants["bohrMagneton"]*param[fNum]["magneticField"][-1]))
         for i in range(len(theo)):
             if i ==0:
                 ind_2 = np.array([np.where(energies>=theo_2[i])[0][0]])
@@ -184,7 +215,7 @@ elif param[fNum]['J']<0: #change thory for AFM
         plt.plot(ind_x,ind_2, '--w',alpha = 0.5)
      
 # Puts the theoretical values into arrays, so they can be plotted ontop of the image
-
+"""
 for i in range(len(theo)):
     if i ==0:
         ind = np.array([np.where(energies>=theo[i])[0][0]])
@@ -192,15 +223,14 @@ for i in range(len(theo)):
     else:
         ind = np.append(ind,np.where(energies>=theo[i])[0][0])
         ind_x = np.append(ind_x,i)
-
-print(ind, ind_x)
-plt.plot(ind_x,ind, '--w',alpha = 0.5)
-#plt.title(r'T = 0K, B = 3T, D = 0.1T')
-print(energies[ind])
+#print(ind, ind_x)
+plt.plot(ind_x,ind*0.05, '--w',alpha = 0.5,label="Theory")
+plt.plot(ind_x,ind, '--r',alpha = 0.5,label="Theory times %d"%(theoscaller))
+plt.legend()
+plt.title(r'T = %i K'%(param[fNum]['temperature']))
+#print(energies[ind])
 print(param[0])
-#plt.xlabel(r'\textbf{Q} = (\textit{h00}) [$Å ^{-1}$]')
-#plt.ylabel(r'\textit{Energy} [meV]')
-plt.xlabel(r'q = ({h00}) [$Å ^{-1}$]')
-plt.ylabel(r'Energy [meV]')
+plt.xlabel(r'$\mathbf{Q}$ = ($\mathit{h00})$ [$Å ^{-1}$]')
+plt.ylabel(r'$\mathit{Energy}$ [meV]')
 plt.show()
 

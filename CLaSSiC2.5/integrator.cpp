@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cmath>
 
-void Integrator::calculateEffectiveField(std::vector<std::vector<int>> &neighbours, std::vector<double> &spin)
+void Integrator::calculateEffectiveField(std::vector<std::vector<int>> &neighbours, std::vector<double> &spin, std::vector<std::vector<double>> &exchangePrefactors)
 {
 	/*
 	Calculates the effective by combining: external field, anisotropy and nearest neighbour interaction
@@ -24,15 +24,13 @@ void Integrator::calculateEffectiveField(std::vector<std::vector<int>> &neighbou
 		jy = 0;
 		jz = 0;
 		// Nearest neighbours
-		for (int j : neighbours[i])
+		for (int j = 0 ; j < neighbours[i].size(); j++)
 		{
-			jx += spin[3 * j];	
-			jy += spin[3 * j + 1];
-			jz += spin[3 * j + 2];
+			effectiveField[3 * i]     += exchangePrefactors[i][j]  * spin[3 * neighbours[i][j]];	// x
+			effectiveField[3 * i + 1] += exchangePrefactors[i][j]  * spin[3 * neighbours[i][j] + 1]; // y
+			effectiveField[3 * i + 2] += exchangePrefactors[i][j]  * spin[3 * neighbours[i][j] + 2]; // z
 		}
-		effectiveField[3 * i]     += constants::exchangePrefactor * jx;	 // x
-		effectiveField[3 * i + 1] += constants::exchangePrefactor * jy; // y
-		effectiveField[3 * i + 2] += constants::exchangePrefactor * jz; // z
+		
 
 		//Stabilizer for kagome lattice by adding anisotropy (1 T) alligned with GS
 		if (constants::geometry==4 && constants::stabilize){
@@ -42,12 +40,12 @@ void Integrator::calculateEffectiveField(std::vector<std::vector<int>> &neighbou
 	}
 }
 
-void Integrator::evaluate(std::vector<std::vector<int>> &neighbours, std::vector<double> &spin)
+void Integrator::evaluate(std::vector<std::vector<int>> &neighbours, std::vector<double> &spin, std::vector<std::vector<double>> &exchangePrefactors)
 {
 	/*
 	function evaluation
 	*/
-	calculateEffectiveField(neighbours, spin);
+	calculateEffectiveField(neighbours, spin, exchangePrefactors);
 	for (int i = 0; i < constants::nAtoms; i++)
 	{
 		rk[3 * i] = -constants::gamma * constants::dt * (spin[3 * i + 1] * effectiveField[3 * i + 2] - spin[3 * i + 2] * effectiveField[3 * i + 1]
@@ -74,15 +72,15 @@ void Integrator::evaluate(std::vector<std::vector<int>> &neighbours, std::vector
 	}
 }
 
-void Integrator::integrate(std::vector<std::vector<int>> &neighbours, std::vector<double> &spin, std::vector<double> &randomField)
+void Integrator::integrate(std::vector<std::vector<int>> &neighbours, std::vector<double> &spin, std::vector<double> &randomField, std::vector<std::vector<double>> &exchangePrefactors)
 {
 	//More hardcore? Does Euler work?
-	evaluate(neighbours, spin);
+	evaluate(neighbours, spin, exchangePrefactors);
 	for (int i = 0; i < constants::nAtoms * 3; i++)
 	{
 		rkPos[i] = spin[i] + rk[i] / 2.;
 	}
-	evaluate(neighbours, rkPos);
+	evaluate(neighbours, rkPos, exchangePrefactors);
 
 	double temperatureSpin[3];
 	for (int i = 0; i < constants::nAtoms; i++)

@@ -10,6 +10,7 @@ private:
 	std::vector<std::vector<int>> neighbours = std::vector<std::vector<int>>(constants::nAtoms, std::vector<int>());
 	std::vector<double> totalEnergy = std::vector<double>((int)constants::steps/100);
 	Integrator integrator;
+	std::vector<std::vector<double>> exchangePrefactors = std::vector<std::vector<double>>(constants::nAtoms, std::vector<double>());
 
 public:
 	Simulation();
@@ -21,6 +22,10 @@ public:
 	void writeConstants(std::ofstream &file);
 	void writePositions();
 	double distance(std::vector<double>::iterator a, std::vector<double>::iterator b);
+	double distanceplane(std::vector<double>::iterator a, std::vector<double>::iterator b);
+	double distancex(std::vector<double>::iterator a, std::vector<double>::iterator b);
+	double distancey(std::vector<double>::iterator a, std::vector<double>::iterator b);
+	double distancez(std::vector<double>::iterator a, std::vector<double>::iterator b);
 	void addNeighbours(std::vector<double> a, std::vector<double> b, int i, int j);
 
 	std::vector<double>* getSpin();

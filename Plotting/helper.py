@@ -28,6 +28,7 @@ constants = {
     "pathFourier" : slash+"CLaSSiC2.5"+slash+"data"+slash+"fourier.dat",
     "pathPosition" : slash+"CLaSSiC2.5"+slash+"data"+slash+"position.csv",
     "pathEnergy" : slash+"CLaSSiC2.5"+slash+"data"+slash+"energy.dat",
+    "pathEnergyIndex" : slash+"CLaSSiC2.5"+slash+"data"+slash+"energyIndex.dat",
     }# 'slash+"CLaSSiC2.0"+' to accomedate filestructure 
 
 def getPath(subPath, i):
@@ -124,6 +125,101 @@ def getData():
 
     return param, x, y, z
 
+def getData2(fNum=0):
+    param = []
+    x, y, z = [], [], []
+    i = fNum
+    path = getPath(constants["pathData"], i)
+    save_time = True
+    print(path)
+    if (os.path.exists(path)):
+        data = np.fromfile(path, dtype=np.double)
+
+        parameters = {
+            "offset" : int(data[0]),
+            "atoms" : int(data[1]),
+            "dt" : data[2]*100,
+            "steps" : int(data[3]/100),
+            "J" : data[4],
+            "lambda" : data[5],
+            "magneticField" : data[6:9],
+            "anisotropy" : data[9:12],
+            "temperature" : data[12],
+            "length" : int(data[13]),
+            "geometry" : int(data[14]),
+            "nUnitCells" : int(data[15]), 
+            "anisotropyStrength" : data[16]
+        }
+        param.append(parameters)
+        x.append(np.reshape(data[param[0]["offset"]+0::3], (param[0]["steps"], param[0]["atoms"])).T)
+        y.append(np.reshape(data[param[0]["offset"]+1::3], (param[0]["steps"], param[0]["atoms"])).T)
+        z.append(np.reshape(data[param[0]["offset"]+2::3], (param[0]["steps"], param[0]["atoms"])).T)
+        
+        # data for the different geometries:
+        if parameters["geometry"] == 0:
+            parameters["geometry"] = "single"
+            parameters["nDimensions"] = 1
+            parameters["nUnitCells"] = 1
+            parameters["basisPosition"] = np.array([[0., 0., 0.]])
+        elif parameters["geometry"] == 1:
+            parameters["geometry"] = "chain"
+            parameters["nDimensions"] = 1
+            parameters["basisPosition"] = np.array([[0., 0., 0.]])
+            parameters["unitVectors"] = np.array([[1., 0., 0.]])
+        elif parameters["geometry"] == 2:
+            parameters["geometry"] = "square"
+            parameters["nDimensions"] = 2
+            parameters["basisPosition"] = np.array([[0., 0., 0.]])
+            parameters["unitVectors"] = np.array([[1., 0., 0.], [0., 1., 0.]])
+        elif parameters["geometry"] == 3:
+            parameters["geometry"] = "triangle"
+            parameters["nDimensions"] = 2
+            parameters["basisPosition"] = np.array([[0., 0., 0.]])
+            parameters["unitVectors"] = np.array([[1., 0., 0.], [np.cos(np.pi/3.), np.sin(np.pi/3.), 0.]])
+        elif parameters["geometry"] == 4:
+            parameters["geometry"] = "kagome"
+            parameters["nDimensions"] = 2
+            parameters["basisPosition"] = np.array([[0., 0., 0.], [1., 0., 0.], [1. * np.cos(np.pi/3.), 1. * np.sin(np.pi/3.), 0.]])
+            parameters["unitVectors"] = np.array([[2., 0., 0.], [2. * np.cos(np.pi/3.), 2. * np.sin(np.pi/3.), 0.]])
+        elif parameters["geometry"] == 5:
+            parameters["geometry"] = "hexagonal"
+            parameters["nDimensions"] = 2
+            parameters["basisPosition"] = np.array([[0., 0., 0.], [np.cos(np.pi/6.), -np.sin(np.pi/6.), 0.]])
+            parameters["unitVectors"] = np.array([[np.sqrt(3), 0., 0.], [np.sqrt(3)*np.cos(np.pi/3.), np.sqrt(3)*np.sin(np.pi/3.), 0.]]) # type: ignore
+        elif parameters["geometry"]== 7:
+            parameters["geometry"]="hyperkagome"
+            parameters["nDimensions"] = 3
+            parameters["basisPosition"] = np.array([[6.,7.,0.],[4.,6.,1.],[2.,5.,0.],[3.,4.,2.],[4.,2.,3.],[2.,3.,4.],[0.,2.,5.],[1.,4.,6.],[0.,6.,7.],[5.,0.,2.],[6.,1.,4.],[7.,0.,6.],[6.,3.,0.],[8.,2.,1.],[7.,4.,2.],[6.,5.,4.],[5.,4.,6.],[4.,6.,5.],[2.,7.,4.],[0.,6.,3.],[1.,8.,2.],[4.,2.,7.],[2.,1.,8.],[3.,0.,6.]])
+            parameters["unitVectors"] = np.array([[8., 0., 0.],[0., 8., 0.],[0., 0., 8.]])
+            if save_time:
+                parameters["basisPosition"] = np.array([[6.,7.,0.],[4.,6.,1.],[2.,5.,0.],[3.,4.,2.],[4.,2.,3.],[2.,3.,4.],[0.,2.,5.],[1.,4.,6.],[0.,6.,7.],[5.,0.,2.],[6.,1.,4.],[7.,0.,6.]])
+        elif parameters["geometry"] == 8:
+            parameters["geometry"] = "hexagonal3D"
+            parameters["nDimensions"] = 3
+            parameters["basisPosition"] = np.array([[0., 0., 0.], [np.cos(np.pi/6.), -np.sin(np.pi/6.), 0.]])
+            parameters["unitVectors"] = np.array([[np.sqrt(3), 0., 0.], [np.sqrt(3)*np.cos(np.pi/3.), np.sqrt(3)*np.sin(np.pi/3.), 0.], [0., 0., np.sqrt(3)]]) # type: ignore
+        i += 1
+        path = getPath(constants["pathData"], i)
+    if i==0:
+        raise FileNotFoundError("Could not open the file!")
+    
+    x = np.stack(x, axis=0)
+    y = np.stack(y, axis=0)
+    z = np.stack(z, axis=0)
+
+    return param, x, y, z
+
+def countData():
+    i = 0
+    path = getPath(constants["pathData"], i)
+    while (os.path.exists(path)):
+        i += 1
+        path = getPath(constants["pathData"], i)
+    if i==0:
+        raise FileNotFoundError("Could not open the file!")
+    
+    return i
+
 def scatterReal(q, position, spin, param):
     input = pyfftw.empty_aligned((param["atoms"], param["steps"]), dtype='float64')
     output = pyfftw.empty_aligned((param["atoms"], int(param["steps"]//2+1)), dtype='complex128')
@@ -188,8 +284,8 @@ def scatterLine(size):
 def scatterLine2(size):
     print(f'chain lattice')
     q = np.array([0, 0, 0])
-    q = reciprocalPath([-1/2*np.pi, -np.sqrt(3)/2*np.pi, 0], [0, 0, 0], q, size)
-    q = reciprocalPath([0, 0, 0], [1/2*np.pi, np.sqrt(3)/2*np.pi, 0], q, size)
+    q = reciprocalPath([np.pi, -np.pi/2, 0], [0, 0, 0], q, size)
+    q = reciprocalPath([0, 0, 0], [np.pi, 2*np.pi/2, 0], q, size)
     q = np.delete(q, 0, axis=0)
     return q
 
@@ -213,11 +309,23 @@ def scatterLine4(size):
 def scatterLine5(size):
     print(f'chain lattice')
     q = np.array([0, 0, 0])
-    theta = np.pi/2
+    theta = np.pi/2*0
     phi = np.pi/2
-    r = 2
-    q = reciprocalPath([-r*np.pi*np.cos(theta)*np.sin(phi), -r*np.pi*np.sin(theta)*np.sin(phi), r*np.cos(phi)], [0, 0, 0], q, size)
-    q = reciprocalPath([0, 0, 0], [r*np.pi*np.cos(theta)*np.sin(phi), r*np.pi*np.sin(theta)*np.sin(phi), r*np.cos(phi)], q, size)
+    r = 1
+    q = reciprocalPath([-r*np.pi*np.cos(theta)*np.sin(phi), -r*np.pi*np.sin(theta)*np.sin(phi), r*np.cos(phi)], [0, 0, 0], q, size*r)
+    q = reciprocalPath([0, 0, 0], [r*np.pi*np.cos(theta)*np.sin(phi), r*np.pi*np.sin(theta)*np.sin(phi), r*np.cos(phi)], q, size*r)
+    q = np.delete(q, 0, axis=0)
+    return q
+
+def scatterLine6(size):
+    print(f'triangluar lattice')
+    scalling1=8*np.pi/3
+    scalling2=8*np.pi/3*np.sqrt(3)/2
+    q = np.array([0, 0, 0])
+    
+    q = reciprocalPath([-scalling1*3/4, scalling2/2, 0], [scalling1*3/4, scalling2/2, 0], q, size*3)
+
+
     q = np.delete(q, 0, axis=0)
     return q
 
@@ -254,6 +362,45 @@ def scatterTriangle3(size):
     q = reciprocalPath([0,0,0], [1/2*np.pi, np.sqrt(3)/4*np.pi, 0], q, size)
     q = reciprocalPath([1/2*np.pi,np.sqrt(3)/4*np.pi,0], [np.pi, 0, 0], q, size)
     q = reciprocalPath([np.pi, 0, 0], [0,0,0], q, size)
+    q = np.delete(q, 0, axis=0)
+    return q
+
+def scatterTriangle4(size):
+    print(f'triangluar lattice')
+    displacement = np.array([np.pi, 0, 0])
+    q = np.array([0, 0, 0])
+    q = reciprocalPath(displacement, displacement + [np.pi, 0, 0], q, size)
+    q = reciprocalPath(displacement + [np.pi, 0, 0], displacement + [1/2*np.pi, np.sqrt(3)/2*np.pi, 0], q, size)
+    q = reciprocalPath(displacement + [1/2*np.pi, np.sqrt(3)/2*np.pi, 0], displacement, q, size)
+    q = np.delete(q, 0, axis=0)
+    return q
+
+def scatterTriangle5(size):
+    print(f'triangluar lattice')
+    scalling1=8*np.pi/3
+    scalling2=8*np.pi/3*np.sqrt(3)/2
+    q = np.array([0, 0, 0])
+    q = reciprocalPath([scalling1, 0, 0], [scalling1/2, scalling2/4, 0], q, size)
+    q = reciprocalPath([scalling1/2, scalling2/4, 0], [scalling1/2, -scalling2/4, 0], q, size)
+    q = reciprocalPath([scalling1/2, -scalling2/4, 0], [scalling1, 0, 0], q, size)
+
+    q = np.delete(q, 0, axis=0)
+    return q
+
+def scatterTriangle6(size):
+    print(f'triangluar lattice')
+    scalling1=8*np.pi/3
+    scalling2=8*np.pi/3*np.sqrt(3)/2
+    q = np.array([0, 0, 0])
+    """
+    q = reciprocalPath([0, scallingy*3/4, 0], [0, scallingy/2, 0], q, size)
+    q = reciprocalPath([0, scallingy/2, 0], [scallingx/(np.sqrt(3)*4), scallingy*3/4, 0], q, size)
+    q = reciprocalPath([scallingx/(np.sqrt(3)*4), scallingy*3/4, 0], [0, scallingy*3/4, 0], q, size)
+    """
+    q = reciprocalPath([scalling1*3/4, 0, 0], [scalling1/2, 0, 0], q, size)
+    q = reciprocalPath([scalling1/2, 0, 0], [scalling1*3/4, scalling2/(np.sqrt(3)*4), 0], q, int(size*np.sqrt(3)/2))
+    q = reciprocalPath([scalling1*3/4, scalling2/(np.sqrt(3)*4), 0], [scalling1*3/4, 0, 0], q, int(size*np.sqrt(3)/4))
+
     q = np.delete(q, 0, axis=0)
     return q
 
@@ -398,13 +545,9 @@ def getF_to_I_dp(spin, qScatter,maxEnergyIndex, param, latticePosition,fNum=0):
         else:
             print(f'progress: finshed')
         for j in range(param[fNum]["atoms"]):
-            I_aa[j,:] *= np.exp(1j * np.dot(qScatter[i,:], latticePosition[j,:]) )
-        
+            I_aa[j,:] *= np.exp(1j * np.dot(qScatter[i,:], latticePosition[j,:]))#*spin[j,0]
+        #I_aa = np.power(I_aa,2)
         I_aa = np.sum(I_aa, axis = 0)
-        ttt = 0j
-        for j in range(param[fNum]["atoms"]):
-            ttt += spin[j,5000]*np.exp(-1j * np.dot(qScatter[i,:], latticePosition[j,:]))
-        #I_aa *= ttt
         I_aa = abs(I_aa[:maxEnergyIndex])
         I_total[ i, : ] = I_aa
     print(f'duration: {time.time()-start}')

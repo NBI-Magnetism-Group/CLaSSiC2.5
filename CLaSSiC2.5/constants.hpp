@@ -26,6 +26,10 @@ namespace constants
     extern int mode;
     extern int nNeighbours;
     extern double minDistance;
+    extern double minRadiusPlane;
+	extern double minRadiusAxis;
+	extern double minHeightPlane;
+	extern double minHeightAxis;
     extern bool periodicBoundary;
     extern bool stabilize;
 
@@ -39,6 +43,8 @@ namespace constants
 	extern double anisotropyPlane;
     extern double magneticField[3];
     extern double J;
+    extern double Jz;
+    extern double Jx;
     extern double lambda;
     extern double temperature;
 
@@ -51,6 +57,8 @@ namespace constants
 
     // Prefactors
     extern double exchangePrefactor;
+    extern double exchangePrefactorz;
+    extern double exchangePrefactorx;
     extern double temperatureSigma;
     extern double anisotropyMatrix[9];
 }

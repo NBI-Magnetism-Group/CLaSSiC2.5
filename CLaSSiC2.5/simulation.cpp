@@ -68,7 +68,8 @@ void Simulation::load()
 						// position.push_back(position[3 * i * dim + j + 3*(k*(1+i))] + (constants::unitVectors[dim][j]) * cell-(constants::unitVectors[0][j])*offset);
 						// std::cout << position.size()/3 << ": "<<position[3 * k + 3 * i + j] << " | " <<  (constants::unitVectors[dim][j]) * cell << " | " << -(constants::unitVectors[1][j])*offset << std::endl;
 						if (j==0 && dim !=2){
-							position.push_back(position[3 * k + constants::basisPosition.size() * 3 * i + j]+constants::unitVectors[dim][j] * cell-(constants::unitVectors[0][j])*offset);
+							//position.push_back(position[3 * k + constants::basisPosition.size() * 3 * i + j]+constants::unitVectors[dim][j] * cell-(constants::unitVectors[0][j])*offset);
+							position.push_back(position[3 * k + constants::basisPosition.size() * 3 * i + j]+constants::unitVectors[dim][j] * cell);
 						} else {
 							position.push_back(position[3 * k + constants::basisPosition.size() * 3 * i + j]+constants::unitVectors[dim][j] * cell);
 						}
@@ -90,9 +91,56 @@ void Simulation::load()
 				// if (i==4){
 				// 	std::cout << "distance: " << distance(position.begin()+3*i,position.begin()+3*j) << std::endl;
 				// }
-				if (distance(position.begin()+3*i,position.begin()+3*j) < constants::minDistance)
-				{
-					neighbours[i].push_back(j);
+				if (constants::Jz == constants::J) {
+					if (constants::Jx == constants::J) {
+						if (distance(position.begin()+3*i,position.begin()+3*j) < constants::minDistance)
+						{
+							neighbours[i].push_back(j);
+							exchangePrefactors[i].push_back(2 * constants::J * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+							//std::cout << i << j << std::endl;
+						}
+					}
+					else {
+						if (distancey(position.begin()+3*i,position.begin()+3*j) < constants::minDistance && distancex(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane && distancez(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+							neighbours[i].push_back(j);
+							exchangePrefactors[i].push_back(2 * constants::J * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+						}
+						else if (distancex(position.begin()+3*i,position.begin()+3*j) < constants::minDistance && distancez(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane && distancey(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+							neighbours[i].push_back(j);
+							exchangePrefactors[i].push_back(2 * constants::Jx * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+						}
+						else if (distancez(position.begin()+3*i,position.begin()+3*j) < constants::minDistance && distancey(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane && distancex(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+							neighbours[i].push_back(j);
+							exchangePrefactors[i].push_back(2 * constants::Jz * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+						}
+					}
+				}
+				else {
+					if (constants::Jx == constants::J) {
+
+						if (distanceplane(position.begin()+3*i,position.begin()+3*j) < constants::minRadiusPlane && distancez(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+							neighbours[i].push_back(j);
+							exchangePrefactors[i].push_back(2 * constants::J * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+						}
+						else if (distanceplane(position.begin()+3*i,position.begin()+3*j)  < constants::minRadiusAxis && distancez(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightAxis) {
+							neighbours[i].push_back(j);
+							exchangePrefactors[i].push_back(2 * constants::Jz * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+						}
+					}
+					else {
+						if (distancey(position.begin()+3*i,position.begin()+3*j) < constants::minDistance && distancex(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane && distancez(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+							neighbours[i].push_back(j);
+							exchangePrefactors[i].push_back(2 * constants::J * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+						}
+						else if (distancex(position.begin()+3*i,position.begin()+3*j) < constants::minDistance && distancez(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane && distancey(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+							neighbours[i].push_back(j);
+							exchangePrefactors[i].push_back(2 * constants::Jx * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+						}
+						else if (distancez(position.begin()+3*i,position.begin()+3*j) < constants::minDistance && distancey(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane && distancex(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+							neighbours[i].push_back(j);
+							exchangePrefactors[i].push_back(2 * constants::Jz * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+						}
+					}
 				}
 			}
 		}
@@ -181,7 +229,7 @@ void Simulation::load()
 					}
 				}
 			}	
-		}	
+		} 
 	}
 	// std::cout << "periodic boundaries complete!\n";
 
@@ -217,8 +265,18 @@ void Simulation::initialize()
 {
 	/*
 	Initializing the spin orientations
-	*/
-
+	
+	int atomicn = 0;
+	for(std::vector<int> i: neighbours)
+	{
+		std::cout << atomicn << " neigbours: ";
+		for(int j: i)
+		{
+			std::cout << j << " ";
+		}
+		std::cout << std::endl;
+		atomicn++;
+	}*/
 	int swap = 1;
 	double delta = 1;
 	double iterAngle;
@@ -354,6 +412,121 @@ void Simulation::initialize()
 			spin[3*i+2] = 0;
 		}
 	break;
+		case 9:
+		//for antiferomagnettic alignments with z axis for square and cubic lattices
+		//small angle with z axis
+		if (constants::nDimensions == 2) {
+
+			for (int j = 0; j < (int)std::sqrt(constants::nAtoms); j++) {
+				for (int i = 0; i < (int)std::sqrt(constants::nAtoms); i++) {
+					spin[3 * i + 3 * (int)std::sqrt(constants::nAtoms) * j] = 0.001 * std::cos((float)(i + j) / std::sqrt(constants::nAtoms) * constants::mode * 2 * constants::pi) * pow(-1,j+i);
+					spin[3 * i + 3 * (int)std::sqrt(constants::nAtoms) * j + 1] = 0.001 * std::sin((float)(i + j) / std::sqrt(constants::nAtoms) * constants::mode * 2 * constants::pi) * pow(-1,j+i);
+					spin[3 * i + 3 * (int)std::sqrt(constants::nAtoms) * j + 2] = 1 * pow(-1,j+i);
+				}
+			}
+		}
+		else if (constants::nDimensions == 3) {
+			for (int k = 0; k < (int)std::cbrt(constants::nAtoms); k++) {
+				for (int j = 0; j < (int)std::cbrt(constants::nAtoms); j++) {
+					for (int i = 0; i < (int)std::cbrt(constants::nAtoms); i++) {
+
+						spin[3 * i + 3 * (int)std::cbrt(constants::nAtoms) * j + 3 * (int)std::cbrt(constants::nAtoms) * (int)std::cbrt(constants::nAtoms) * k] = 0.001 * std::cos((float)(i + j + k) / std::cbrt(constants::nAtoms) * constants::mode * 2 * constants::pi) * pow(-1, k + j + i);
+						spin[3 * i + 3 * (int)std::cbrt(constants::nAtoms) * j + 3 * (int)std::cbrt(constants::nAtoms) * (int)std::cbrt(constants::nAtoms) * k + 1] = 0.001 * std::sin((float)(i + j + k) / std::cbrt(constants::nAtoms) * constants::mode * 2 * constants::pi) * pow(-1, k + j + i);
+						spin[3 * i + 3 * (int)std::cbrt(constants::nAtoms) * j + 3 * (int)std::cbrt(constants::nAtoms) * (int)std::cbrt(constants::nAtoms) * k + 2] = 1 * pow(-1, k + j + i);
+					}
+				}
+			}
+		}
+		else {
+			for (int i = 0; i < (int)constants::nAtoms; i++)
+			{
+				spin[3 * i] = 0.001 * std::cos((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
+				spin[3 * i + 1] = 0.001 * std::sin((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
+				spin[3 * i + 2] = 1;
+				i++;
+				spin[3 * i ] = -0.001 * std::cos((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
+				spin[3 * i + 1] = -0.001 * std::sin((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
+				spin[3 * i + 2] = -1;
+			}
+		}
+	break;
+		case 10:
+		//for antiferomagnettic alignments with xy plane for square and cubic lattices
+		//small angle with plane along y axis
+		if (constants::nDimensions == 2) {
+			for (int j = 0; j < (int)std::sqrt(constants::nAtoms); j++) {
+				for (int i = 0; i < (int)std::sqrt(constants::nAtoms); i++) {
+					spin[3 * i + 3 * (int)std::sqrt(constants::nAtoms) * j] = 0.001 * std::cos((float)(i + j) / std::sqrt(constants::nAtoms) * constants::mode * 2 * constants::pi) * pow(-1,j+i);
+					spin[3 * i + 3 * (int)std::sqrt(constants::nAtoms) * j + 1] = 1 * pow(-1,j+i);
+					spin[3 * i + 3 * (int)std::sqrt(constants::nAtoms) * j + 2] = 0.001 * std::sin((float)(i + j) / std::sqrt(constants::nAtoms) * constants::mode * 2 * constants::pi) * pow(-1,j+i);
+				}
+			}
+		}
+		else if (constants::nDimensions == 3) {
+			for (int k = 0; k < (int)std::cbrt(constants::nAtoms); k++) {
+				for (int j = 0; j < (int)std::cbrt(constants::nAtoms); j++) {
+					for (int i = 0; i < (int)std::cbrt(constants::nAtoms); i++) {
+						spin[3 * i + 3 * (int)std::cbrt(constants::nAtoms) * j + 3 * (int)std::cbrt(constants::nAtoms) * (int)std::cbrt(constants::nAtoms) * k] = 0.001 * std::cos((float)(i + j + k) / std::cbrt(constants::nAtoms) * constants::mode * 2 * constants::pi) * pow(-1, k + j + i);
+						spin[3 * i + 3 * (int)std::cbrt(constants::nAtoms) * j + 3 * (int)std::cbrt(constants::nAtoms) * (int)std::cbrt(constants::nAtoms) * k + 1] = 1 * pow(-1, k + j + i);
+						spin[3 * i + 3 * (int)std::cbrt(constants::nAtoms) * j + 3 * (int)std::cbrt(constants::nAtoms) * (int)std::cbrt(constants::nAtoms) * k + 2] = 0.001 * std::sin((float)(i + j + k) / std::cbrt(constants::nAtoms) * constants::mode * 2 * constants::pi) * pow(-1, k + j + i);
+					}
+				}
+			}
+		}
+		else {
+			for (int i = 0; i < (int)constants::nAtoms; i++)
+			{
+				spin[3 * i] = 0.001 * std::cos((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
+				spin[3 * i + 1] = 1;
+				spin[3 * i + 2] = 0.001 * std::sin((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
+				i++;
+				spin[3 * i ] = -0.001 * std::cos((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
+				spin[3 * i + 1] = -1;
+				spin[3 * i + 2] = -0.001 * std::sin((float)i / constants::nAtoms * constants::mode * 2 * constants::pi);
+			}
+		}
+	break;
+		case 11:
+		//for antiferomagnettic alignments with xy plane for triangular lattices
+		//no angle from three sides
+		
+		if (constants::nDimensions == 2) {
+			int off = 0;
+			for (int j = 0; j < (int)std::sqrt(constants::nAtoms); j++) {
+				if (j % 2 == 0) {
+					//off++;
+				}
+				for (int i = 0; i < (int)std::sqrt(constants::nAtoms); i++) {
+					spin[3 * i + 3 * (int)std::sqrt(constants::nAtoms) * j] = std::cos((float)(i - j - off) * 2 * constants::pi / 3);
+					spin[3 * i + 3 * (int)std::sqrt(constants::nAtoms) * j + 1] = std::sin((float)(i - j - off) * 2 * constants::pi / 3);
+					spin[3 * i + 3 * (int)std::sqrt(constants::nAtoms) * j + 2] = 0;
+				}
+			}
+		}
+		else if (constants::nDimensions == 3) {
+			for (int k = 0; k < (int)std::cbrt(constants::nAtoms); k++) {
+				for (int j = 0; j < (int)std::cbrt(constants::nAtoms); j++) {
+					for (int i = 0; i < (int)std::cbrt(constants::nAtoms); i++) {
+						spin[3 * i + 3 * (int)std::cbrt(constants::nAtoms) * j + 3 * (int)std::cbrt(constants::nAtoms) * (int)std::cbrt(constants::nAtoms) * k] = std::cos((float)(i - j - k) * 2 * constants::pi / 3);
+						spin[3 * i + 3 * (int)std::cbrt(constants::nAtoms) * j + 3 * (int)std::cbrt(constants::nAtoms) * (int)std::cbrt(constants::nAtoms) * k + 1] = std::sin((float)(i - j - k) * 2 * constants::pi / 3);
+						spin[3 * i + 3 * (int)std::cbrt(constants::nAtoms) * j + 3 * (int)std::cbrt(constants::nAtoms) * (int)std::cbrt(constants::nAtoms) * k + 2] = 0;
+					}
+				}
+			}
+		}
+		else {
+			for (int i = 0; i < (int)constants::nAtoms; i++)
+			{
+				spin[3 * i] = std::cos((float)i * 2 * constants::pi / 3);
+				spin[3 * i + 1] = std::sin((float)i * 2 * constants::pi / 3);
+				spin[3 * i + 2] = 0;
+				i++;
+				spin[3 * i ] = std::cos((float)i * 2 * constants::pi / 3);
+				spin[3 * i + 1] = std::sin((float)i * 2 * constants::pi / 3);
+				spin[3 * i + 2] = 0;
+			}
+		}
+	break;
 		case 8:
 		// Uses spin orientations in the Saved_spin.dat file to initialize 
 		// Load file
@@ -423,8 +596,12 @@ void Simulation::run()
 				{
 					randomField[i] = burnInDistribution(engine);
 				}
-				integrator.integrate(neighbours, spin, randomField);
+				integrator.integrate(neighbours, spin, randomField, exchangePrefactors);
 				normalize();
+			}
+			if (i % 100 == 0)
+			{
+				std::cout << "Burn in progress: " << (float)i / constants::steps * 100 << "%\r";
 			}
 		}
 	}
@@ -459,7 +636,7 @@ void Simulation::run()
 			fileSpin.write((char *)&spin[0], sizeof(double) * constants::nAtoms * 3);
 			totalEnergy[i/100]=integrator.calculateEnergy(spin);
 		}
-		integrator.integrate(neighbours, spin, randomField);
+		integrator.integrate(neighbours, spin, randomField, exchangePrefactors);
 		normalize();
 	}
 
@@ -550,7 +727,32 @@ double Simulation::distance(std::vector<double>::iterator a, std::vector<double>
 						+(*(a+2)-*(b+2))*(*(a+2)-*(b+2)));
 	return distance;
 }
-
+double Simulation::distanceplane(std::vector<double>::iterator a, std::vector<double>::iterator b){
+	//Returns the distance between a and b. Takes the first three elements as Carthesian coordinates
+	double distance;
+	distance = std::sqrt((*a-*b)*(*a-*b)
+						+(*(a+1)-*(b+1))*(*(a+1)-*(b+1)));
+	return distance;
+}
+double Simulation::distancex(std::vector<double>::iterator a, std::vector<double>::iterator b){
+	//Returns the distance between a and b. Takes the first three elements as Carthesian coordinates
+	double distance;
+	distance = std::sqrt((*a-*b)*(*a-*b));
+	return distance;
+}
+double Simulation::distancey(std::vector<double>::iterator a, std::vector<double>::iterator b){
+	//Returns the distance between a and b. Takes the first three elements as Carthesian coordinates
+	double distance;
+	distance = std::sqrt((*(a+1)-*(b+1))*(*(a+1)-*(b+1)));
+	return distance;
+}
+double Simulation::distancez(std::vector<double>::iterator a, std::vector<double>::iterator b){
+	//Returns the distance between a and b. Takes the first three elements as Carthesian coordinates
+	double distance;
+	distance = std::sqrt((*(a+2)-*(b+2))*(*(a+2)-*(b+2)));
+	return distance;
+}
+/*
 void Simulation::addNeighbours(std::vector<double> a, std::vector<double> b, int i, int j){
 	//Checks if the point i and j are neighbours and adds them if true
 		if (distance(a.begin(), b.begin()+3*j) < constants::minDistance) {
@@ -560,7 +762,60 @@ void Simulation::addNeighbours(std::vector<double> a, std::vector<double> b, int
 		}
 	}
 }
-
+*/
+void Simulation::addNeighbours(std::vector<double> a, std::vector<double> b, int i, int j){
+	//Checks if the point i and j are neighbours and adds them if true
+	if (constants::Jz == constants::J) {
+		if (constants::Jx == constants::J) {
+			if (distance(position.begin()+3*i,position.begin()+3*j) < constants::minDistance)
+			{
+				neighbours[i].push_back(j);
+				exchangePrefactors[i].push_back(2 * constants::J * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+				//std::cout << i << j << std::endl;
+			}
+		}
+		else {
+			if (distancey(position.begin()+3*i,position.begin()+3*j) < constants::minDistance && distancex(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane && distancez(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+				neighbours[i].push_back(j);
+				exchangePrefactors[i].push_back(2 * constants::J * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+			}
+			else if (distancex(position.begin()+3*i,position.begin()+3*j) < constants::minDistance && distancez(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane && distancey(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+				neighbours[i].push_back(j);
+				exchangePrefactors[i].push_back(2 * constants::Jx * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+			}
+			else if (distancez(position.begin()+3*i,position.begin()+3*j) < constants::minDistance && distancey(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane && distancex(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+				neighbours[i].push_back(j);
+				exchangePrefactors[i].push_back(2 * constants::Jz * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+			}
+		}
+	}
+	else {
+		if (constants::Jx == constants::J) {
+			if (distanceplane(position.begin()+3*i,position.begin()+3*j) < constants::minRadiusPlane && distancez(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+				neighbours[i].push_back(j);
+				exchangePrefactors[i].push_back(2 * constants::J * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+			}
+			else if (distanceplane(position.begin()+3*i,position.begin()+3*j)  < constants::minRadiusAxis && distancez(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightAxis) {
+				neighbours[i].push_back(j);
+				exchangePrefactors[i].push_back(2 * constants::Jz * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+			}
+		}
+		else {
+			if (distancey(position.begin()+3*i,position.begin()+3*j) < constants::minDistance && distancex(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane && distancez(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+				neighbours[i].push_back(j);
+				exchangePrefactors[i].push_back(2 * constants::J * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+			}
+			else if (distancex(position.begin()+3*i,position.begin()+3*j) < constants::minDistance && distancez(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane && distancey(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+				neighbours[i].push_back(j);
+				exchangePrefactors[i].push_back(2 * constants::Jx * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+			}
+			else if (distancez(position.begin()+3*i,position.begin()+3*j) < constants::minDistance && distancey(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane && distancex(position.begin()+3*i,position.begin()+3*j)  < constants::minHeightPlane) {
+				neighbours[i].push_back(j);
+				exchangePrefactors[i].push_back(2 * constants::Jz * constants::spinSize / (constants::gFactor * constants::bohrMagneton));
+			}
+		}
+	}
+}
 std::vector<double>* Simulation::getSpin(){
 	return &spin;
 }

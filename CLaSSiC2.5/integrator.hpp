@@ -11,9 +11,9 @@ private:
 	std::vector<double> stabilizerField = std::vector<double>(3 * constants::nAtoms);
 
 public:
-	void calculateEffectiveField(std::vector<std::vector<int>> &neighbours, std::vector<double> &spin);
-	void evaluate(std::vector<std::vector<int>> &neighbours, std::vector<double> &spin);
-	void integrate(std::vector<std::vector<int>> &neighbours, std::vector<double> &spin, std::vector<double> &randomField);
+	void calculateEffectiveField(std::vector<std::vector<int>> &neighbours, std::vector<double> &spin, std::vector<std::vector<double>> &exchangePrefactors);
+	void evaluate(std::vector<std::vector<int>> &neighbours, std::vector<double> &spin, std::vector<std::vector<double>> &exchangePrefactors);
+	void integrate(std::vector<std::vector<int>> &neighbours, std::vector<double> &spin, std::vector<double> &randomField, std::vector<std::vector<double>> &exchangePrefactors);
 	double calculateEnergy(std::vector<double> &spin);
 	double dotProduct(const double a[3], double b[3]);
 

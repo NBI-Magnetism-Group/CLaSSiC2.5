@@ -15,7 +15,7 @@ namespace constants
     double pi = 3.14159265359;
 
 	// System constants
-	double spinSize = 3.5;
+	double spinSize = 2 ;
 	int nUnitCells = 8;
 	int nDimensions = 1;
 	int nAtoms;
@@ -29,6 +29,10 @@ namespace constants
 	double angle = 0.25 * constants::pi;
 	int mode = 1;
 	double minDistance = 1.1;
+	double minRadiusPlane = 1.1;
+	double minRadiusAxis = 0.9;
+	double minHeightPlane = 0.5;
+	double minHeightAxis = 1.1;
 	bool periodicBoundary = true;
 	bool stabilize = false;
 
@@ -41,7 +45,9 @@ namespace constants
 	double anisotropyAxis = 0;
 	double anisotropyPlane = 0;
 	double magneticField[3] = {0, 0, 0};
-	double J = -2 * boltzmann;
+	double J = -2 ;
+	double Jz = 0 ;
+	double Jx = 0 ;
 	double temperature = 0;
 	double lambda = 0;
 
@@ -56,6 +62,8 @@ namespace constants
 
 	// Prefactors
 	double exchangePrefactor;
+	double exchangePrefactorz;
+	double exchangePrefactorx;
 	double temperatureSigma;
 	double anisotropyMatrix[9];
 
@@ -65,7 +73,7 @@ namespace constants
 bool printPositions = false;
 bool printNeighbours = false;
 bool printInitialize = false;
-
+ 
 void setDerivatives(){
 	constants::nAtoms = constants::basisPosition.size() * (int)std::pow(constants::nUnitCells, constants::nDimensions);
 	std::cout << "nAtoms: " << constants::nAtoms << std::endl;
@@ -74,6 +82,8 @@ void setDerivatives(){
 	constants::length = 3 * constants::nAtoms;
 
 	constants::exchangePrefactor = 2 * constants::J * constants::spinSize / (constants::gFactor * constants::bohrMagneton);
+	constants::exchangePrefactorz = 2 * constants::Jz * constants::spinSize / (constants::gFactor * constants::bohrMagneton);
+	constants::exchangePrefactorx = 2 * constants::Jx * constants::spinSize / (constants::gFactor * constants::bohrMagneton);
 	constants::temperatureSigma = std::sqrt(2. * constants::lambda * constants::boltzmann * constants::hBar * constants::dt * constants::temperature/ 
 		(constants::gFactor * constants::gFactor * constants::bohrMagneton * constants::bohrMagneton * constants::spinSize));
 	constants::anisotropyStrength = constants::anisotropyAxis;
